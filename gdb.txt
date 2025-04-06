@@ -1,0 +1,18 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Debuginfod has been enabled.
+To make this setting permanent, add 'set debuginfod enabled on' to .gdbinit.
+Breakpoint 1 at 0x14d6521c: DispatchByArrowTraits. (11 locations)
+Starting program: /home/ninaiad/ydb-x-mongo/ydb/ydb/tests/tools/kqprun/kqprun > output
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7ffff7a006c0 (LWP 67019)]
+[Thread 0x7ffff7a006c0 (LWP 67019) exited]
+[Inferior 1 (process 67016) exited with code 01]
+Starting program: /home/ninaiad/ydb-x-mongo/ydb/ydb/tests/tools/kqprun/kqprun > output
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7ffff7a006c0 (LWP 67051)]
+[Thread 0x7ffff7a006c0 (LWP 67051) exited]
+[Inferior 1 (process 67050) exited with code 01]

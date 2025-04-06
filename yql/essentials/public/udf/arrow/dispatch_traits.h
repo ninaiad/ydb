@@ -229,6 +229,11 @@ std::unique_ptr<typename TTraits::TResult> DispatchByArrowTraits(const ITypeInfo
         }
     }
 
+    TTaggedTypeInspector typeTagged(typeInfoHelper, type);
+    if (typeTagged) {
+        return DispatchByArrowTraits<TTraits>(typeInfoHelper, typeTagged.GetBaseType(), pgBuilder, std::forward<TArgs>(args)...);
+    }
+
     if (IsSingularType(typeInfoHelper, type)) {
         Y_ENSURE(!isOptional, "Optional data types are not supported directly for singular type. Please use TExternalOptional wrapper.");
         if constexpr (TTraits::PassType) {

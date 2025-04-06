@@ -17,7 +17,8 @@ std::set<TString> GetAllExternalDataSourceTypes() {
         ToString(NYql::EDatabaseType::MsSQLServer),
         ToString(NYql::EDatabaseType::Oracle),
         ToString(NYql::EDatabaseType::Logging),
-        ToString(NYql::EDatabaseType::Solomon)
+        ToString(NYql::EDatabaseType::Solomon),
+        ToString(NYql::EDatabaseType::MongoDB)
     };
     return allTypes;
 }
@@ -40,6 +41,8 @@ EDatabaseType DatabaseTypeFromDataSourceKind(NYql::EGenericDataSourceKind dataSo
           return EDatabaseType::Oracle;
         case NYql::EGenericDataSourceKind::LOGGING:
           return EDatabaseType::Logging;
+        case NYql::EGenericDataSourceKind::MONGO_DB:
+          return EDatabaseType::MongoDB;
         default:
             ythrow yexception() << "Unknown data source kind: " << NYql::EGenericDataSourceKind_Name(dataSourceKind);
     }
@@ -63,6 +66,8 @@ NYql::EGenericDataSourceKind DatabaseTypeToDataSourceKind(EDatabaseType database
             return NYql::EGenericDataSourceKind::ORACLE;
         case EDatabaseType::Logging:
             return NYql::EGenericDataSourceKind::LOGGING;
+        case EDatabaseType::MongoDB:
+            return NYql::EGenericDataSourceKind::MONGO_DB;
         default:
             ythrow yexception() << "Unknown database type: " << ToString(databaseType);
     }

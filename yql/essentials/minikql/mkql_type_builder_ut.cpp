@@ -348,6 +348,17 @@ private:
         auto atype2 = TypeInfoHelper->ImportArrowType(&s);
         UNIT_ASSERT_VALUES_EQUAL(static_cast<TArrowType*>(atype2.Get())->GetType()->ToString(), std::string("uint64"));
     }
+
+    void TestArrowTaggedType() {
+        auto type =FunctionTypeInfoBuilder.Tagged(FunctionTypeInfoBuilder.SimpleType<i8>(), "my_tag");
+        auto atype1 = TypeInfoHelper->MakeArrowType(type);
+        UNIT_ASSERT(atype1);
+        UNIT_ASSERT_VALUES_EQUAL(static_cast<TArrowType*>(atype1.Get())->GetType()->ToString(), std::string("i8"));
+        ArrowSchema s;
+        atype1->Export(&s);
+        auto atype2 = TypeInfoHelper->ImportArrowType(&s);
+        UNIT_ASSERT_VALUES_EQUAL(static_cast<TArrowType*>(atype2.Get())->GetType()->ToString(), std::string("i8"));
+    }
 };
 
 UNIT_TEST_SUITE_REGISTRATION(TMiniKQLTypeBuilderTest);

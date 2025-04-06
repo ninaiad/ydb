@@ -1,0 +1,5 @@
+No symbol table is loaded.  Use the "file" command.
+The program is not being run.
+Starting program:  -s ydb/schema.yql -p ydb/data.yql --app-config=ydb/app_conf.txt
+No executable file specified.
+Use the "file" or "exec-file" command.

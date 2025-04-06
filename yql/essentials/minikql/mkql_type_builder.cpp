@@ -1655,6 +1655,13 @@ bool ConvertArrowTypeImpl(TType* itemType, std::shared_ptr<arrow::DataType>& typ
         return true;
     }
 
+    if (unpacked->IsTagged()) {
+        auto taggedType = AS_TYPE(TTaggedType, unpacked);
+        auto baseType = taggedType->GetBaseType();
+
+        return ConvertArrowTypeImpl(baseType, type, onFail, output);
+    }
+
     if (unpacked->IsResource()) {
         type = arrow::fixed_size_binary(sizeof(NYql::NUdf::TUnboxedValuePod));
         return true;
