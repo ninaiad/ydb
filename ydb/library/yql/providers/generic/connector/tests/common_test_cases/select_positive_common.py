@@ -11,6 +11,7 @@ import ydb.library.yql.providers.generic.connector.tests.utils.types.clickhouse 
 import ydb.library.yql.providers.generic.connector.tests.utils.types.mysql as mysql
 import ydb.library.yql.providers.generic.connector.tests.utils.types.postgresql as postgresql
 import ydb.library.yql.providers.generic.connector.tests.utils.types.ydb as Ydb
+import ydb.library.yql.providers.generic.connector.tests.utils.types.mongodb as mongodb
 from ydb.library.yql.providers.generic.connector.tests.utils.schema import (
     Schema,
     Column,
@@ -54,7 +55,7 @@ class Factory:
 
     def _column_selection(self) -> Sequence[TestCase]:
         '''
-        In these test case set we check SELECT from a small table with various SELECT parameters,
+        In these test cases set we check SELECT from a small table with various SELECT parameters,
         like `SELECT * FROM table` or `SELECT a, b, c FROM table`.
 
         It's quite important that the table has at least one column with lowercase name and
@@ -72,14 +73,14 @@ class Factory:
                     name='COL1',
                     ydb_type=Type.INT32,
                     data_source_type=DataSourceType(
-                        ch=clickhouse.Int32(), pg=postgresql.Int4(), ydb=Ydb.Int32(), my=mysql.Integer()
+                        ch=clickhouse.Int32(), pg=postgresql.Int4(), ydb=Ydb.Int32(), my=mysql.Integer(), mng=mongodb.Int32()
                     ),
                 ),
                 Column(
                     name='col2',
                     ydb_type=Type.INT32,
                     data_source_type=DataSourceType(
-                        ch=clickhouse.Int32(), pg=postgresql.Int4(), ydb=Ydb.Int32(), my=mysql.Integer()
+                        ch=clickhouse.Int32(), pg=postgresql.Int4(), ydb=Ydb.Int32(), my=mysql.Integer(), mng=mongodb.Int32()
                     ),
                 ),
             )
@@ -100,6 +101,7 @@ class Factory:
                     EGenericDataSourceKind.YDB,
                     EGenericDataSourceKind.MYSQL,
                     EGenericDataSourceKind.MS_SQL_SERVER,
+                    # NOTE: doesn't work for MongoDB because of the _id column that always exists
                 ),
             ),
             # SELECT COL1 FROM table
@@ -115,6 +117,7 @@ class Factory:
                     EGenericDataSourceKind.YDB,
                     EGenericDataSourceKind.MYSQL,
                     EGenericDataSourceKind.MS_SQL_SERVER,
+                    EGenericDataSourceKind.MONGO_DB,
                 ),
             ),
             # SELECT col1 FROM table
@@ -139,6 +142,7 @@ class Factory:
                     EGenericDataSourceKind.YDB,
                     EGenericDataSourceKind.MYSQL,
                     EGenericDataSourceKind.MS_SQL_SERVER,
+                    EGenericDataSourceKind.MONGO_DB,
                 ),
             ),
             # SELECT col2, COL1 FROM table
@@ -154,6 +158,7 @@ class Factory:
                     EGenericDataSourceKind.YDB,
                     EGenericDataSourceKind.MYSQL,
                     EGenericDataSourceKind.MS_SQL_SERVER,
+                    EGenericDataSourceKind.MONGO_DB,
                 ),
             ),
             # SELECT col2, col1 FROM table
@@ -179,6 +184,7 @@ class Factory:
                     EGenericDataSourceKind.YDB,
                     EGenericDataSourceKind.MYSQL,
                     EGenericDataSourceKind.MS_SQL_SERVER,
+                    EGenericDataSourceKind.MONGO_DB,
                 ),
             ),
             # Select the same column multiple times with different aliases
@@ -201,6 +207,7 @@ class Factory:
                     EGenericDataSourceKind.YDB,
                     EGenericDataSourceKind.MYSQL,
                     EGenericDataSourceKind.MS_SQL_SERVER,
+                    EGenericDataSourceKind.MONGO_DB,
                 ),
             ),
         )
@@ -318,6 +325,7 @@ class Factory:
             EGenericDataSourceKind.YDB: [EGenericProtocol.NATIVE],
             EGenericDataSourceKind.MYSQL: [EGenericProtocol.NATIVE],
             EGenericDataSourceKind.MS_SQL_SERVER: [EGenericProtocol.NATIVE],
+            EGenericDataSourceKind.MONGO_DB: [EGenericProtocol.NATIVE],
         }
 
         base_test_cases = None
@@ -326,6 +334,7 @@ class Factory:
             EGenericDataSourceKind.YDB,
             EGenericDataSourceKind.MYSQL,
             EGenericDataSourceKind.MS_SQL_SERVER,
+            EGenericDataSourceKind.MONGO_DB,
         ]:
             base_test_cases = self._column_selection()
         elif data_source_kind in [EGenericDataSourceKind.CLICKHOUSE, EGenericDataSourceKind.POSTGRESQL]:

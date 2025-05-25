@@ -36,8 +36,9 @@ Generic {
 {% set MS_SQL_SERVER = 'MS_SQL_SERVER' %}
 {% set MYSQL = 'MYSQL' %}
 {% set ORACLE = 'ORACLE' %}
+{% set MONGO_DB = 'MONGO_DB' %}
 
-{% macro data_source(kind, cluster, host, port, username, password, protocol, database, schema, service_name) -%}
+{% macro data_source(kind, cluster, host, port, username, password, protocol, database, schema, service_name, reading_mode) -%}
     ClusterMapping {
         Kind: {{kind}}
         Name: "{{cluster}}"
@@ -68,6 +69,13 @@ Generic {
             value: "{{service_name}}"
         }
         {% endif %}
+
+        {% if kind == MONGO_DB and reading_mode %}
+        DataSourceOptions: {
+            key: "reading_mode"
+            value: "{{reading_mode}}"
+        }
+        {% endif %}
     }
 {%- endmacro -%}
 
@@ -94,6 +102,7 @@ Generic {
     CLICKHOUSE_PROTOCOL,
     cluster.database,
     NONE,
+    NONE,
     NONE)
 }}
 {% endfor %}
@@ -108,6 +117,7 @@ Generic {
     settings.ms_sql_server.password,
     NATIVE,
     cluster.database,
+    NONE,
     NONE)
 }}
 {% endfor %}
@@ -122,6 +132,7 @@ Generic {
     settings.mysql.password,
     NATIVE,
     cluster.database,
+    NONE,
     NONE,
     NONE)
 }}
@@ -138,7 +149,8 @@ Generic {
     NATIVE,
     cluster.database,
     NONE,
-    cluster.service_name)
+    cluster.service_name,
+    NONE)
 }}
 {% endfor %}
 
@@ -153,7 +165,24 @@ Generic {
     NATIVE,
     cluster.database,
     cluster.schema,
+    NONE,
     NONE)
+}}
+{% endfor %}
+
+{% for cluster in generic_settings.mongodb_clusters %}
+{{ data_source(
+    MONGO_DB,
+    settings.mongodb.cluster_name,
+    settings.mongodb.host_internal,
+    settings.mongodb.port_internal,
+    settings.mongodb.username,
+    settings.mongodb.password,
+    NATIVE,
+    cluster.database,
+    NONE,
+    NONE,
+    cluster.reading_mode)
 }}
 {% endfor %}
 

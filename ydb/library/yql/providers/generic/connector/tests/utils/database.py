@@ -31,6 +31,9 @@ class Database:
             case EGenericDataSourceKind.YDB:
                 # We use preinitialized database when working with YDB.
                 self.name = "local"
+            case EGenericDataSourceKind.MONGO_DB:
+                # For this kind of database this name is provided by the external logic
+                self.name = name
             case _:
                 raise Exception(f'invalid data source: {self.kind}')
 

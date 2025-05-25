@@ -34,6 +34,8 @@ class BaseTestCase:
                 return self.name_
             case EGenericDataSourceKind.YDB:
                 return self.name_
+            case EGenericDataSourceKind.MONGO_DB:
+                return self.name_
             case _:
                 raise Exception(f'invalid data source: {self.data_source_kind}')
 
@@ -57,6 +59,8 @@ class BaseTestCase:
                 return Database(self.name, self.data_source_kind)
             case EGenericDataSourceKind.YDB:
                 return Database("local", self.data_source_kind)
+            case EGenericDataSourceKind.MONGO_DB:
+                return Database("db", self.data_source_kind)
 
     @functools.cached_property
     def table_name(self) -> str:
@@ -76,6 +80,8 @@ class BaseTestCase:
             case EGenericDataSourceKind.POSTGRESQL:
                 return 't' + make_random_string(8)
             case EGenericDataSourceKind.YDB:
+                return self.name
+            case EGenericDataSourceKind.MONGO_DB:
                 return self.name
             case _:
                 raise Exception(f'invalid data source: {self.data_source_kind}')
@@ -121,6 +127,11 @@ class BaseTestCase:
                 return GenericSettings(
                     date_time_format=EDateTimeFormat.YQL_FORMAT,
                     ydb_clusters=[GenericSettings.YdbCluster(database=self.database.name)],
+                )
+            case EGenericDataSourceKind.MONGO_DB:
+                return GenericSettings(
+                    date_time_format=EDateTimeFormat.YQL_FORMAT,
+                    mongodb_clusters=[GenericSettings.MongoDBCluster(database=self.database.name, reading_mode='TABLE')],
                 )
             case _:
                 raise Exception(f'invalid data source: {self.data_source_kind}')

@@ -336,7 +336,7 @@ class Factory:
 
     def _count_rows(self) -> Sequence[TestCase]:
         '''
-        In this test case set we check SELECT COUNT(*) from a pg table.
+        In this test case set we check SELECT COUNT(*) from MySQL table.
         '''
 
         schema = Schema(

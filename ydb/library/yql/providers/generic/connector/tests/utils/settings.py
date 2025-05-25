@@ -99,6 +99,20 @@ class Settings:
 
     ydb: Ydb
 
+    @dataclass
+    class MongoDB:
+        dbname: str
+        cluster_name: str
+        username: str
+        password: str
+        host_external: str
+        host_internal: str
+        port_external: int
+        port_internal: int
+        reading_mode: str
+
+    mongodb: MongoDB
+
     @classmethod
     def from_env(
         cls, docker_compose_dir: pathlib.Path, data_source_kinds: Sequence[EGenericDataSourceKind]
@@ -193,6 +207,18 @@ class Settings:
                         username='user',
                         password='password',
                     )
+                case EGenericDataSourceKind.MONGO_DB:
+                    data_sources[data_source_kind] = cls.MongoDB(
+                        cluster_name='mongodb_integration_test',
+                        host_external='0.0.0.0',
+                        host_internal=endpoint_determiner.get_internal_ip('mongodb'),
+                        port_external=endpoint_determiner.get_external_port('mongodb', 27017),
+                        port_internal=27017,
+                        dbname='mongodb_integration_test',
+                        username='user',
+                        password='password',
+                        reading_mode='TABLE',
+                    )
                 case _:
                     raise Exception(f'invalid data source: {data_source_kind}')
 
@@ -209,6 +235,7 @@ class Settings:
             oracle=data_sources.get(EGenericDataSourceKind.ORACLE),
             postgresql=data_sources.get(EGenericDataSourceKind.POSTGRESQL),
             ydb=data_sources.get(EGenericDataSourceKind.YDB),
+            mongodb=data_sources.get(EGenericDataSourceKind.MONGO_DB),
         )
 
     def get_cluster_name(self, data_source_kind: EGenericDataSourceKind) -> str:
@@ -225,6 +252,8 @@ class Settings:
                 return self.postgresql.cluster_name
             case EGenericDataSourceKind.YDB:
                 return self.ydb.cluster_name
+            case EGenericDataSourceKind.MONGO_DB:
+                return self.mongodb.cluster_name
             case _:
                 raise Exception(f'invalid data source: {EGenericDataSourceKind.Name(data_source_kind)}')
 
@@ -286,3 +315,11 @@ class GenericSettings:
         database: str
 
     ydb_clusters: Sequence[YdbCluster] = field(default_factory=list)
+
+    @dataclass
+    class MongoDBCluster:
+        database: str
+        reading_mode: str
+
+    mongodb_clusters: Sequence[MongoDBCluster] = field(default_factory=list)
+

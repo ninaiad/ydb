@@ -13,6 +13,7 @@ import ydb.library.yql.providers.generic.connector.tests.utils.types.mysql as my
 import ydb.library.yql.providers.generic.connector.tests.utils.types.oracle as oracle
 import ydb.library.yql.providers.generic.connector.tests.utils.types.ms_sql_server as ms_sql_server
 import ydb.library.yql.providers.generic.connector.tests.utils.types.postgresql as postgresql
+import ydb.library.yql.providers.generic.connector.tests.utils.types.mongodb as mongodb
 import ydb.library.yql.providers.generic.connector.tests.utils.types.ydb as Ydb
 
 YsonList: TypeAlias = yson.yson_types.YsonList
@@ -26,6 +27,7 @@ class DataSourceType:
     ora: oracle.Type = None
     pg: postgresql.Type = None
     ydb: Ydb.Type = None
+    mng: mongodb.Type = None
 
     def pick(self, kind: EGenericDataSourceKind.ValueType) -> str:
         target = None
@@ -42,6 +44,8 @@ class DataSourceType:
                 target = self.pg
             case EGenericDataSourceKind.YDB:
                 target = self.ydb
+            case EGenericDataSourceKind.MONGO_DB:
+                target = self.mng
             case _:
                 raise Exception(f'invalid data source: {kind}')
 

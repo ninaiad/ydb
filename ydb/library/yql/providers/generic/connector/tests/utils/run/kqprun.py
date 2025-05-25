@@ -22,7 +22,7 @@ LOGGER = make_logger(__name__)
 class SchemeRenderer:
     template_: Final = '''
 
-{% macro create_data_source(kind, data_source, host, port, login, password, protocol, database, schema, service_name) -%}
+{% macro create_data_source(kind, data_source, host, port, login, password, protocol, database, schema, service_name, reading_mode) -%}
 
 CREATE OBJECT {{data_source}}_local_password (TYPE SECRET) WITH (value = "{{password}}");
 
@@ -47,6 +47,10 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
     {% if kind == ORACLE and service_name %}
         ,SERVICE_NAME="{{service_name}}"
     {% endif %}
+
+    {% if kind == MONGO_DB and reading_mode %}
+        ,READING_MODE="{{reading_mode}}"
+    {% endif %}
 );
 
 {%- endmacro -%}
@@ -57,6 +61,7 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
 {% set ORACLE = 'Oracle' %}
 {% set POSTGRESQL = 'PostgreSQL' %}
 {% set YDB = 'Ydb' %}
+{% set MONGO_DB = 'MongoDB' %}
 
 {% set NATIVE = 'NATIVE' %}
 {% set HTTP = 'HTTP' %}
@@ -81,6 +86,7 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
     CLICKHOUSE_PROTOCOL,
     cluster.database,
     NONE,
+    NONE,
     NONE)
 }}
 {% endfor %}
@@ -95,6 +101,8 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
     settings.ms_sql_server.password,
     NONE,
     cluster.database,
+    NONE,
+    NONE,
     NONE)
 }}
 {% endfor %}
@@ -109,6 +117,7 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
     settings.mysql.password,
     NONE,
     cluster.database,
+    NONE,
     NONE,
     NONE)
 }}
@@ -125,7 +134,8 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
     NONE,
     NONE,
     NONE,
-    cluster.service_name)
+    cluster.service_name,
+    NONE)
 }}
 {% endfor %}
 
@@ -140,6 +150,7 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
     NATIVE,
     cluster.database,
     cluster.schema,
+    NONE,
     NONE)
 }}
 {% endfor %}
@@ -155,7 +166,24 @@ CREATE EXTERNAL DATA SOURCE {{data_source}} WITH (
     NONE,
     cluster.database,
     NONE,
+    NONE,
     NONE)
+}}
+{% endfor %}
+
+{% for cluster in generic_settings.mongodb_clusters %}
+{{ create_data_source(
+    MONGO_DB,
+    settings.mongodb.cluster_name,
+    settings.mongodb.host_internal,
+    settings.mongodb.port_internal,
+    settings.mongodb.username,
+    settings.mongodb.password,
+    NONE,
+    cluster.database,
+    NONE,
+    NONE,
+    cluster.reading_mode)
 }}
 {% endfor %}
 

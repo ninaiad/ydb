@@ -12,6 +12,7 @@ PY_SRCS(
     oracle.py
     postgresql.py
     ydb.py
+    mongodb.py
 )
 
 PEERDIR(
